@@ -16,11 +16,26 @@ class EquipmentStatus(BaseModel):
 
 class Equipment(BaseModel):
     name = CharField(max_length=100, constraints=[Check('length(name) >= 1 AND length(name) <= 100')])
-    type_id = ForeignKeyField(EquipmentType, backref='equipment', field='id', on_delete='RESTRICT', column_name='type_id')
+    type_id = ForeignKeyField(
+        EquipmentType, 
+        backref='equipment', 
+        field='id', 
+        on_delete='RESTRICT', 
+        column_name='type_id',
+        constraints=[Check('type_id > 0')]
+    )
     room_id = IntegerField(constraints=[Check('room_id > 0')], column_name='room_id')  # внешний ключ к Room Service, но здесь без FK
-    status_id = ForeignKeyField(EquipmentStatus, backref='equipment', field='id', on_delete='RESTRICT', default=1, constraints=[Check('status_id > 0')], column_name='status_id')
+    status_id = ForeignKeyField(
+        EquipmentStatus, 
+        backref='equipment', 
+        field='id', 
+        on_delete='RESTRICT', 
+        default=1, 
+        constraints=[Check('status_id > 0')], 
+        column_name='status_id'
+    )
     inventory_number = CharField(max_length=50, unique=True, null=True, column_name='inventory_number')  # может быть NULL
-    description = CharField(max_length=500, default='', column_name='description')
+    description = TextField(default='', column_name='description')  # TextField без ограничения длины
     is_active = BooleanField(default=True, column_name='is_active')  # мягкое удаление
 
     class Meta:
