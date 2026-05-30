@@ -11,8 +11,8 @@ class EquipmentType(BaseModel):
     name = CharField(max_length=100, unique=True)  # projector, computers, machines, boards, other
 
 class EquipmentStatus(BaseModel):
-    name = CharField(max_length=50, unique=True)  # active, broken, maintenance
-    description = TextField(default='')
+    name = CharField(max_length=50, unique=True, constraints=[Check("length(name) >= 1")])  # active, broken, maintenance
+    description = CharField(max_length=200, default='')  # ограничение до 200 символов
 
 class Equipment(BaseModel):
     name = CharField(max_length=100, constraints=[Check('length(name) >= 1 AND length(name) <= 100')])
@@ -20,7 +20,7 @@ class Equipment(BaseModel):
     room_id = IntegerField(constraints=[Check('room_id > 0')], column_name='room_id')  # внешний ключ к Room Service, но здесь без FK
     status_id = ForeignKeyField(EquipmentStatus, backref='equipment', field='id', on_delete='RESTRICT', default=1, constraints=[Check('status_id > 0')])
     inventory_number = CharField(max_length=50, unique=True, null=True, column_name='inventory_number')  # может быть NULL
-    description = CharField(max_length=500, default='', column_name='description')  # ограничение 500 символов
+    description = CharField(max_length=500, default='', column_name='description')
     is_active = BooleanField(default=True, column_name='is_active')  # мягкое удаление
 
     class Meta:
